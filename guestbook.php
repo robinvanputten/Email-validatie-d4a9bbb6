@@ -47,8 +47,7 @@ try {
         if (userIsAdmin($conn)) {
             echo 'Color:';
             echo '<input type="text" name="color">';
-        }
-        else {
+        } else {
             echo '<input type="hidden" value="red" name="color">';
         }
         ?>
@@ -58,22 +57,26 @@ try {
         } ?>
         <input type="submit">
     </form>
-    <hr/>
+
     <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        print '<div style="color: red;">Needs to be a valid email address</div>';
+    } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
         $text = $_POST['text'];
         $admin = isset($_POST['admin']) ? 1 : 0;
         if (userIsAdmin($conn)) {
             $color = $_POST['color'];
-        }
-        else {
+        } else {
             $color = 'red';
         }
         $color = $_POST['color'];
-        $conn->query("INSERT INTO `entries`(`email`, `color`, `admin`, `text`) 
+        $conn->query("INSERT INTO `entries`(`email`, `color`, `admin`, `text`)
                                         VALUES ('$email', '$color', '$admin', '$text');");
     }
+    ?>
+    <hr/>
+    <?php
 
 
     $result = $conn->query("SELECT `email`, `text`, `color`, `admin` FROM `entries`");
